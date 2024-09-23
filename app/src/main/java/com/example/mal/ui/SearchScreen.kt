@@ -255,7 +255,7 @@ fun AnimeColumn(anime: Anime, onClick: (Anime) -> Unit, modifier: Modifier = Mod
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        anime.type,
+                        anime.type ?: "Unknown",
                         modifier = Modifier
                             .background(
                                 shape = androidx.compose.foundation.shape.RoundedCornerShape(5.dp),
@@ -310,14 +310,6 @@ fun PhotoGrid(
                 AnimeColumn(anime = anime, onClick = {})
             }
         }
-//        Text("swaghst", modifier = Modifier.align(Alignment.CenterHorizontally))
-//
-//        Button(
-//            onClick = { },
-//            modifier = Modifier.padding(0.dp)
-//        ) {
-//            Text("Retry")
-//        }
 
     }
 }

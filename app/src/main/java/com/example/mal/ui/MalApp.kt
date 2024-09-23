@@ -29,8 +29,14 @@ fun MalApp(
         bottomBar = {
             BottomNavBar(navController = navController)
         }
-    ){
-        innerPadding ->
-        BottomNavGraph(navController = navController, viewModel = viewModel, modifier = modifier.padding(innerPadding).fillMaxSize(), contentPaddingValues = innerPadding)
+    ) { innerPadding ->
+        BottomNavGraph(
+            navController = navController,
+            viewModel = viewModel,
+            modifier = modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            contentPaddingValues = innerPadding
+        )
     }
 }
