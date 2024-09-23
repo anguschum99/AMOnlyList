@@ -5,10 +5,11 @@ Using Jetpack Compose, Retrofit, Coil, GSON Converter, okHTTp, Kotlin Coroutines
 <img src="https://i.imgur.com/Md7LlIM.png" width="400" height="700">
 <img src="https://i.imgur.com/WFLuA3d.png" width="400" height="700">
 
-### Features
+### Current Features
  * Search for Anime using the Jikan Api
 
 ### WiP
+ * Revamped Theming
  * Manga implementation
  * Dark Mode
  * Seasonal Anime - current, past and upcoming
