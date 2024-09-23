@@ -7,7 +7,7 @@ import com.example.mal.network.MalApiService
 
 interface MalRepository {
     suspend fun getAnimeList(query: String, page: Int, genre: String?): List<Anime>?
-    suspend fun getTopAnimeList(page: Int): List<Anime>?
+    suspend fun getTopAnimeList(page: Int, filter: String? = null): List<Anime>?
 }
 
 class NetworkMalRepository(
@@ -24,9 +24,9 @@ class NetworkMalRepository(
         }
     }
 
-    override suspend fun getTopAnimeList(page: Int): List<Anime>? {
+    override suspend fun getTopAnimeList(page: Int, filter: String?): List<Anime>? {
         return try {
-            val response = malApiService.getTopAnimeList(page)
+            val response = malApiService.getTopAnimeList(page, filter)
             if (response.isSuccessful) response.body()?.data ?: emptyList()
             else throw NetworkErrorException(response.code().toString())
         } catch (e: Exception) {

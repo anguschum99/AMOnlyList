@@ -1,4 +1,4 @@
-package com.example.mal.ui
+package com.example.mal.ui.screens
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -9,12 +9,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mal.data.ScreenType
-import com.example.mal.model.Title
 import com.example.mal.ui.components.BottomNavBar
 
 

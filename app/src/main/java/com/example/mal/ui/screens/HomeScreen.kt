@@ -1,20 +1,16 @@
-package com.example.mal.ui
+package com.example.mal.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,7 +27,7 @@ import com.example.mal.model.Anime
 @Composable
 fun HomeScreen(
     viewModel: MalViewModel,
-    uiState: AnimeUiState,
+    uiState: HomeAnimeUiState,
     contentPaddingValues: PaddingValues
 ) {
     Column(
@@ -42,12 +38,14 @@ fun HomeScreen(
             .fillMaxSize()
     ) {
         when (uiState) {
-            is AnimeUiState.Loading -> Text(text = "Loading")
-            is AnimeUiState.Success -> {
+            is HomeAnimeUiState.Loading -> Text(text = "Loading")
+            is HomeAnimeUiState.Success -> {
                 Text("Top Anime")
-                GenreRow(list = uiState.animeList)
+                GenreRow(list = uiState.topAnimeList)
+                Text("Top Airing")
+                GenreRow(list = uiState.topAiringList)
             }
-            is AnimeUiState.Error -> Text(text = "Error")
+            is HomeAnimeUiState.Error -> Text(text = "Error")
         }
     }
 }

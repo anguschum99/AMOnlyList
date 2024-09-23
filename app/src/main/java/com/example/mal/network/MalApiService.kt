@@ -15,7 +15,10 @@ interface MalApiService {
     ): Response<AnimeList>
 
     @GET("top/anime")
-    suspend fun getTopAnimeList(@Query("page") page: Int): Response<AnimeList>
+    suspend fun getTopAnimeList(
+        @Query("page") page: Int,
+        @Query("filter") filter: String? = null
+    ): Response<AnimeList>
 
 
 }

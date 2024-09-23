@@ -1,11 +1,8 @@
-package com.example.mal.ui
+package com.example.mal.ui.screens
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -14,11 +11,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mal.MalApplication
 import com.example.mal.data.MalRepository
-import com.example.mal.data.ScreenType
 import com.example.mal.model.Anime
-import com.example.mal.model.AnimeList
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 sealed interface AnimeUiState {
@@ -27,6 +20,11 @@ sealed interface AnimeUiState {
     object Loading : AnimeUiState
 }
 
+sealed interface HomeAnimeUiState {
+    data class Success(val topAnimeList: List<Anime>, val topAiringList: List<Anime>) : HomeAnimeUiState
+    object Error : HomeAnimeUiState
+    object Loading : HomeAnimeUiState
+}
 
 
 
@@ -34,10 +32,10 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
     var animeUiState: AnimeUiState by mutableStateOf(AnimeUiState.Loading)
         private set
 
-    var topAnimeUiState: AnimeUiState by mutableStateOf(AnimeUiState.Loading)
+    var topAnimeUiState: HomeAnimeUiState by mutableStateOf(HomeAnimeUiState.Loading)
         private set
 
-    fun frog(uiState: AnimeUiState,query: String?, page: Int = 1){
+    fun frog(uiState: AnimeUiState, query: String?, page: Int = 1){
         getAnimeList(query, page)
     }
 
@@ -56,17 +54,19 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
         }
     }
 
-    fun getTopAnimeList(page: Int = 1){
+    fun getTopAnimeList(page: Int = 1, filter: String? = null){
         viewModelScope.launch {
-            topAnimeUiState = AnimeUiState.Loading
+            topAnimeUiState = HomeAnimeUiState.Loading
             topAnimeUiState = try {
                 val animeList = malRepository.getTopAnimeList(page)
                     ?: throw Exception("Anime list is null")
-                AnimeUiState.Success(animeList)
+                val topAiringList = malRepository.getTopAnimeList(page, "airing")
+                    ?: throw Exception("Anime list is null")
+                HomeAnimeUiState.Success(animeList,topAiringList)
                 } catch (e: Exception) {
-                AnimeUiState.Error
+                HomeAnimeUiState.Error
             } catch (e: retrofit2.HttpException) {
-                AnimeUiState.Error
+                HomeAnimeUiState.Error
             }
         }
     }

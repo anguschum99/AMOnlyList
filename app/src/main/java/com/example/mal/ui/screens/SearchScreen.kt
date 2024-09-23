@@ -1,36 +1,23 @@
 @file:OptIn(ExperimentalFoundationApi::class)
 
-package com.example.mal.ui
+package com.example.mal.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
@@ -45,16 +32,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.mal.model.Anime
-import com.example.mal.model.AnimeList
 import com.example.mal.ui.components.MalSearch
 
 @Composable
@@ -88,7 +71,7 @@ fun TabScreen(
     var pagerState = rememberPagerState {
         tabItems.size
     }
-
+    // Remembers state of search bar
     var active by remember { mutableStateOf(false) }
 
 
@@ -156,8 +139,6 @@ fun TabScreen(
                             }
                         }
 
-
-
                         Column(
                             Modifier
                                 .fillMaxSize()
@@ -189,6 +170,7 @@ fun TabScreen(
             }
 
         is AnimeUiState.Error -> Text(text = "Error")
+
     }
 }
 
@@ -227,6 +209,7 @@ fun AnimeCard(
     }
 }
 
+// Individual Card Handler
 @Composable
 fun AnimeColumn(anime: Anime, onClick: (Anime) -> Unit, modifier: Modifier = Modifier) {
     Card(
@@ -324,9 +307,3 @@ val tabItems = listOf(
     TabItem(title = "Manga"),
 )
 
-//@Preview(showBackground = true)
-//@Composable
-//fun SearchScreenPreview() {
-//    val MalViewModel: MalViewModel = viewModel(factory = MalViewModel.Factory)
-//    SearchScreen(viewModel = MalViewModel, uiState = MalViewModel.animeUiState)
-//}
