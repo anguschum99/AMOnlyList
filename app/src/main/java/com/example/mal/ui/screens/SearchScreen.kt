@@ -45,18 +45,17 @@ fun SearchScreen(
     viewModel: MalViewModel,
     uiState: AnimeUiState,
     modifier: Modifier = Modifier,
-    contentPaddingValues: PaddingValues
+    contentPaddingValues: PaddingValues,
+    onClick: (Anime) -> Unit
 ) {
     TabScreen(
         viewModel = viewModel,
         uiState = uiState,
         modifier = modifier,
-        contentPaddingValues = contentPaddingValues
+        contentPaddingValues = contentPaddingValues,
+        onClick = onClick
     )
-//    Column(modifier = modifier.fillMaxSize().wrapContentHeight(), verticalArrangement = Arrangement.Bottom,) {
-//
-//        Text("swag")
-//    }
+
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -65,7 +64,8 @@ fun TabScreen(
     viewModel: MalViewModel,
     uiState: AnimeUiState,
     modifier: Modifier = Modifier,
-    contentPaddingValues: PaddingValues
+    contentPaddingValues: PaddingValues,
+    onClick: (Anime) -> Unit
 ) {
     // Create a pager state with the number of tabs
     var pagerState = rememberPagerState {
@@ -98,7 +98,7 @@ fun TabScreen(
                     .fillMaxSize()
                     .padding(bottom = 47.dp),
 
-            ) {
+                ) {
                 // Tab Row
                 TabRow(
                     selectedTabIndex = viewModel.selectedTabIndex,
@@ -134,7 +134,8 @@ fun TabScreen(
                             ) {
                                 PhotoGrid(
                                     list = uiState.animeList,
-                                    contentPaddingValues = contentPaddingValues
+                                    contentPaddingValues = contentPaddingValues,
+                                    onClick = onClick
                                 )
                             }
                         }
@@ -234,7 +235,10 @@ fun AnimeColumn(anime: Anime, onClick: (Anime) -> Unit, modifier: Modifier = Mod
             Column(
                 modifier = Modifier.padding(5.dp),
             ) {
-                Text(anime.title ?: "null", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
+                Text(
+                    anime.title ?: "null",
+                    style = androidx.compose.material3.MaterialTheme.typography.titleMedium
+                )
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
@@ -256,13 +260,13 @@ fun AnimeColumn(anime: Anime, onClick: (Anime) -> Unit, modifier: Modifier = Mod
                 Text("${anime.score} Rating")
                 Text(
                     text =
-                        if (anime.year == 0) {
-                            ""
-                        } else if (anime.year == null) {
-                            "null"
-                        } else {
-                            anime.year.toString()
-                        }
+                    if (anime.year == 0) {
+                        ""
+                    } else if (anime.year == null) {
+                        "null"
+                    } else {
+                        anime.year.toString()
+                    }
                 )
 
             }
@@ -276,7 +280,8 @@ fun AnimeColumn(anime: Anime, onClick: (Anime) -> Unit, modifier: Modifier = Mod
 fun PhotoGrid(
     list: List<Anime>,
     modifier: Modifier = Modifier,
-    contentPaddingValues: PaddingValues
+    contentPaddingValues: PaddingValues,
+    onClick: (Anime) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -290,7 +295,7 @@ fun PhotoGrid(
                 .fillMaxSize(),
         ) {
             items(items = list, key = { anime -> anime.mal_id }) { anime ->
-                AnimeColumn(anime = anime, onClick = {})
+                AnimeColumn(anime = anime, onClick = { onClick(anime) })
             }
         }
 

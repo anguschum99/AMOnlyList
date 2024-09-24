@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -21,6 +22,7 @@ fun MalApp(
     modifier: Modifier = Modifier
 ) {
     val paddingValues = WindowInsets.navigationBars.asPaddingValues()
+
     Scaffold(
         bottomBar = {
             BottomNavBar(navController = navController)
@@ -32,7 +34,8 @@ fun MalApp(
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            contentPaddingValues = innerPadding
+            contentPaddingValues = innerPadding,
+
         )
     }
 }

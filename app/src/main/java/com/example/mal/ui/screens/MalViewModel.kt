@@ -12,6 +12,10 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mal.MalApplication
 import com.example.mal.data.MalRepository
 import com.example.mal.model.Anime
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 sealed interface AnimeUiState {
@@ -26,6 +30,12 @@ sealed interface HomeAnimeUiState {
     object Loading : HomeAnimeUiState
 }
 
+data class MalUiState(
+    val homeState: HomeAnimeUiState,
+    val currentAnime: Anime? = null,
+    //val currentManga: Manga? = null
+)
+
 
 
 class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
@@ -35,8 +45,21 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
     var topAnimeUiState: HomeAnimeUiState by mutableStateOf(HomeAnimeUiState.Loading)
         private set
 
+    private val _uiState = MutableStateFlow(
+        MalUiState(homeState = topAnimeUiState)
+    )
+    val uiState: StateFlow<MalUiState> = _uiState.asStateFlow()
+
+
+
     fun frog(uiState: AnimeUiState, query: String?, page: Int = 1){
         getAnimeList(query, page)
+    }
+
+    fun getAnime(){
+        _uiState.update {
+            it.copy(homeState = topAnimeUiState)
+        }
     }
 
     fun getAnimeList(query: String? = null, page: Int = 1, genre: String? = null) {
@@ -70,6 +93,14 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
             }
         }
     }
+
+    fun updateCurrentAnime(anime: Anime){
+        _uiState.update {
+            it.copy(currentAnime = anime)
+        }
+    }
+
+
 
     var currentAnime: Anime? = null
 
