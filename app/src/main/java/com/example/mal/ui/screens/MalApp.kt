@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mal.ui.components.BottomNavBar
+import com.example.mal.ui.components.TopBar
 
 
 @Composable
@@ -22,11 +25,26 @@ fun MalApp(
     modifier: Modifier = Modifier
 ) {
     val paddingValues = WindowInsets.navigationBars.asPaddingValues()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+
 
     Scaffold(
+        topBar = {
+            TopBar(
+                navController = navController,
+                canNavigateBack = navController.previousBackStackEntry != null,
+                navigateUp = { navController.navigateUp() }
+            )
+        },
+
+
+
         bottomBar = {
             BottomNavBar(navController = navController)
         }
+
     ) { innerPadding ->
         BottomNavGraph(
             navController = navController,

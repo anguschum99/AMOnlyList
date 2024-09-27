@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,13 +27,15 @@ import coil.request.ImageRequest
 @Composable
 fun AnimeDetail(
     viewModel: MalViewModel,
-    uiState: MalUiState
+    uiState: MalUiState,
+    contentPaddingValues: PaddingValues = PaddingValues(0.dp)
 ) {
     Column(
         verticalArrangement = Arrangement.Top,
         modifier = Modifier
             .fillMaxSize()
             .background(androidx.compose.ui.graphics.Color.White)
+            .padding(contentPaddingValues)
     ) {
         Text(uiState.currentAnime?.title.toString(), modifier = Modifier.padding(16.dp))
 
@@ -45,7 +48,7 @@ fun AnimeDetail(
                 contentDescription = null,
                 //contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .padding(5.dp)
+                    .padding(5.dp, 20.dp)
                     .size(250.dp, 350.dp )
                     .border(1.dp, androidx.compose.ui.graphics.Color.Black)
             )

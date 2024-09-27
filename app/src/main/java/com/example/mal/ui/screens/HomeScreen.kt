@@ -1,5 +1,7 @@
 package com.example.mal.ui.screens
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,34 +32,42 @@ import com.example.mal.model.Anime
 fun HomeScreen(
     viewModel: MalViewModel,
     uiState: HomeAnimeUiState,
-    contentPaddingValues: PaddingValues
+    contentPaddingValues: PaddingValues,
+    onClick: (Anime) -> Unit,
+    modifier: Modifier = Modifier
 ) {
+    val scrollState = rememberScrollState()
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(contentPaddingValues)
             .fillMaxSize()
+            .verticalScroll(scrollState)
     ) {
         when (uiState) {
             is HomeAnimeUiState.Loading -> Text(text = "Loading")
             is HomeAnimeUiState.Success -> {
                 Text("Top Anime")
-                GenreRow(list = uiState.topAnimeList)
+                GenreRow(list = uiState.topAnimeList,onClick = onClick)
                 Text("Top Airing")
-                GenreRow(list = uiState.topAiringList)
+                GenreRow(list = uiState.topAiringList,onClick = onClick)
+
             }
             is HomeAnimeUiState.Error -> Text(text = "Error")
+
         }
     }
 }
 
 @Composable
-fun GenreCard(anime: Anime) {
+fun GenreCard(anime: Anime, onClick: (Anime) -> Unit, modifier: Modifier = Modifier) {
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .size(150.dp, 250.dp),
+            .size(150.dp, 250.dp)
+            .clickable { onClick(anime) },
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -91,10 +103,10 @@ fun GenreCard(anime: Anime) {
 }
 
 @Composable
-fun GenreRow(list: List<Anime>) {
+fun GenreRow(list: List<Anime>,onClick: (Anime) -> Unit) {
     LazyRow {
         items(list, key = { anime -> anime.mal_id }) { anime ->
-            GenreCard(anime = anime)
+            GenreCard(anime = anime, onClick = onClick)
 
         }
     }

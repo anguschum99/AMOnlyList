@@ -56,6 +56,17 @@ sealed class NavigationItems(
 }
 
 @Composable
+fun topNavBar(
+    navController: NavHostController,
+    canNavigateBack: Boolean,
+    navigateUp: () -> Unit,
+    modifier: Modifier = Modifier
+){
+
+}
+
+
+@Composable
 fun BottomNavBar(
     navController: NavHostController,
     modifier: Modifier = Modifier

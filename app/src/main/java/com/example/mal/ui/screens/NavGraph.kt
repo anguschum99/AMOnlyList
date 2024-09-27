@@ -1,6 +1,7 @@
 package com.example.mal.ui.screens
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -19,6 +20,8 @@ fun BottomNavGraph(
     contentPaddingValues: PaddingValues,
 ) {
     val uiState = viewModel.uiState.collectAsState().value
+
+
     NavHost(
         navController = navController,
         startDestination = NavigationItems.Home.route,
@@ -28,8 +31,14 @@ fun BottomNavGraph(
             HomeScreen(
                 viewModel = viewModel,
                 uiState = viewModel.topAnimeUiState,
-                contentPaddingValues = contentPaddingValues
-            )
+                contentPaddingValues = contentPaddingValues,
+                onClick = {
+                    viewModel.updateCurrentAnime(it)
+                    viewModel.currentAnime = it
+                    navController.navigate(NavigationItems.Detail.route)
+                },
+
+                )
         }
         composable(route = NavigationItems.Search.route) {
             SearchScreen(
@@ -47,9 +56,11 @@ fun BottomNavGraph(
         }
 
         composable(route = NavigationItems.Detail.route) {
-            AnimeDetail(viewModel = viewModel, uiState = uiState)
+            AnimeDetail(viewModel = viewModel, uiState = uiState,contentPaddingValues = contentPaddingValues)
         }
 
 
     }
+
+
 }
