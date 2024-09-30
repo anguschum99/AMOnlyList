@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">MAL</string>
+    <string name="loading_failed">Loading Failed</string>
+    <string name="retry">Retry</string>
+    <string name="popularity">Popularity</string>
+    <string name="ranking">Ranking</string>
 </resources>

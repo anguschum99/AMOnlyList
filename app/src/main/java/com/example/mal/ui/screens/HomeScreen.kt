@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.mal.model.Anime
+import com.example.mal.ui.components.ErrorScreen
 
 @Composable
 fun HomeScreen(
@@ -50,12 +51,13 @@ fun HomeScreen(
             is HomeAnimeUiState.Loading -> Text(text = "Loading")
             is HomeAnimeUiState.Success -> {
                 Text("Top Anime")
-                GenreRow(list = uiState.topAnimeList,onClick = onClick)
+                GenreRow(list = uiState.topAnimeList, onClick = onClick)
                 Text("Top Airing")
-                GenreRow(list = uiState.topAiringList,onClick = onClick)
+                GenreRow(list = uiState.topAiringList, onClick = onClick)
 
             }
-            is HomeAnimeUiState.Error -> Text(text = "Error")
+
+            is HomeAnimeUiState.Error -> ErrorScreen(retryAction = viewModel::getTopAnimeList)
 
         }
     }
@@ -102,8 +104,9 @@ fun GenreCard(anime: Anime, onClick: (Anime) -> Unit, modifier: Modifier = Modif
     }
 }
 
+
 @Composable
-fun GenreRow(list: List<Anime>,onClick: (Anime) -> Unit) {
+fun GenreRow(list: List<Anime>, onClick: (Anime) -> Unit) {
     LazyRow {
         items(list, key = { anime -> anime.mal_id }) { anime ->
             GenreCard(anime = anime, onClick = onClick)

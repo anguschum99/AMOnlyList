@@ -17,6 +17,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun TopBar(
+    currentScreen: String,
     navController: NavHostController,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
