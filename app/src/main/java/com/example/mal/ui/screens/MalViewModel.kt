@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mal.MalApplication
 import com.example.mal.data.MalRepository
 import com.example.mal.model.Anime
+import com.example.mal.model.Manga
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,6 +29,12 @@ sealed interface HomeAnimeUiState {
     data class Success(val topAnimeList: List<Anime>, val topAiringList: List<Anime>) : HomeAnimeUiState
     object Error : HomeAnimeUiState
     object Loading : HomeAnimeUiState
+}
+
+sealed interface MangaUiState {
+    data class Success(val mangaList: List<Manga>) : MangaUiState
+    object Error : MangaUiState
+    object Loading : MangaUiState
 }
 
 data class MalUiState(
@@ -93,6 +100,14 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
             }
         }
     }
+
+    fun getManga(query: String? = null, page: Int = 1, genre: String? = null){
+        viewModelScope.launch {
+
+        }
+    }
+
+
 
     fun updateCurrentAnime(anime: Anime){
         _uiState.update {

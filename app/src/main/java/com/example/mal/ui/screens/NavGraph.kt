@@ -10,7 +10,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.mal.model.Anime
 import com.example.mal.ui.components.BottomNavBar
 import com.example.mal.ui.components.NavigationItems
 import com.example.mal.ui.components.TopBar
