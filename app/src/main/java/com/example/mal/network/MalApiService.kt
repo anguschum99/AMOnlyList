@@ -1,10 +1,12 @@
 package com.example.mal.network
 
+import com.example.mal.model.AnimeCharacterList
 import com.example.mal.model.AnimeList
 import com.example.mal.model.CharacterList
 import com.example.mal.model.MangaList
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface MalApiService {
@@ -21,6 +23,11 @@ interface MalApiService {
         @Query("page") page: Int,
         @Query("filter") filter: String? = null
     ): Response<AnimeList>
+
+    @GET("anime/{id}/characters")
+    suspend fun getAnimeCharacters(
+        @Path("id") id: Int
+    ): Response<AnimeCharacterList>
 
     @GET("manga")
     suspend fun getMangaList(

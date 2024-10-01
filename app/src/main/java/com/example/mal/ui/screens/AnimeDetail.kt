@@ -9,11 +9,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -33,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.mal.R
+import com.example.mal.model.AniChara
 
 @Composable
 fun AnimeDetail(
@@ -155,6 +163,57 @@ fun AnimeDetail(
             HorizontalDivider(Modifier.padding(10.dp))
 
             Text(uiState.currentAnime?.synopsis.toString())
+
+            HorizontalDivider(Modifier.padding(10.dp))
+
+        }
+
+        Column {
+            if (uiState.currentAnimeCharacters.isEmpty()){
+                Text("No characters found")
+            }
+
+            CharacterList(list = uiState.currentAnimeCharacters)
+        }
+
+    }
+}
+
+@Composable
+fun CharacterCard(aniChara: AniChara){
+    Card(
+        modifier = Modifier.size(170.dp, 300.dp).padding(horizontal = 2.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 10.dp
+        )
+    ) {
+        Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+            AsyncImage(
+                model = ImageRequest.Builder(context = LocalContext.current)
+                    .data(aniChara.character.images.jpg.image_url)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+            Text(aniChara.role)
+            Text(aniChara.character.name, modifier = Modifier)
+        }
+    }
+}
+
+@Composable
+fun CharacterList(list: List<AniChara>){
+    LazyRow(
+        Modifier.fillMaxWidth()
+            .size(150.dp, 250.dp)
+    ) {
+        items(list,key = {list -> list.character.mal_id}){ list ->
+            CharacterCard(list)
         }
     }
 }

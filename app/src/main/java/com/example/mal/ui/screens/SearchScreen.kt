@@ -180,7 +180,11 @@ fun AnimeCard(
     anime: Anime,
     onClick: (Anime) -> Unit,
     modifier: Modifier = Modifier
-) {
+)
+
+{
+
+
     Column(modifier = modifier) {
         Card(
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),

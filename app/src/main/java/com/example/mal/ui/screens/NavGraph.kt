@@ -51,7 +51,6 @@ fun BottomNavGraph(
                     contentPaddingValues = innerPadding,
                     onClick = {
                         viewModel.updateCurrentAnime(it)
-                        viewModel.currentAnime = it
                         navController.navigate(NavigationItems.Detail.route)
                     },
 
@@ -65,7 +64,6 @@ fun BottomNavGraph(
                     contentPaddingValues = innerPadding,
                     onClick = {
                         viewModel.updateCurrentAnime(it)
-                        viewModel.currentAnime = it
                         navController.navigate(NavigationItems.Detail.route)
                     },
                 )
