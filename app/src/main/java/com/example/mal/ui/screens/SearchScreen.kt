@@ -51,7 +51,8 @@ fun SearchScreen(
     mangaUiState: MangaUiState,
     modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues,
-    onClick: (Anime) -> Unit
+    onClick: (Anime) -> Unit,
+    mangaOnClick: (MangaSummary) -> Unit
 ) {
     Column(modifier = modifier) {
         TabScreen(
@@ -60,7 +61,8 @@ fun SearchScreen(
             mangaUiState = mangaUiState,
             modifier = modifier,
             contentPaddingValues = contentPaddingValues,
-            onClick = onClick
+            onClick = onClick,
+            mangaOnClick = mangaOnClick
 
         )
     }
@@ -76,7 +78,8 @@ fun TabScreen(
     mangaUiState: MangaUiState,
     modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues,
-    onClick: (Anime) -> Unit
+    onClick: (Anime) -> Unit,
+    mangaOnClick: (MangaSummary) -> Unit
 ) {
     // Create a pager state with the number of tabs
     val pagerState = rememberPagerState {
@@ -99,106 +102,108 @@ fun TabScreen(
 
     }
 
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(),
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(),
 
-                ) {
-                // Tab Row
-                TabRow(
-                    selectedTabIndex = viewModel.selectedTabIndex,
-                    modifier = Modifier.padding()
-                ) {
-                    tabItems.forEachIndexed { index, item ->
-                        Tab(
-                            selected = viewModel.selectedTabIndex == index,
-                            onClick = { viewModel.selectedTabIndex = index },
-                            text = { Text(text = item.title) }
-                        )
-                    }
-                }
-
-                // Horizontal Pager
-                HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { index ->
-                    if (pagerState.currentPage == 0) {
-                        Scaffold(
-                            topBar = {
-                                MalSearch(
-                                    query = viewModel.userInput,
-                                    onQueryChanged = { viewModel.onUserInputChanged(it) },
-                                    onKeyboardDone = { viewModel.getAnimeList(viewModel.userInput) },
-                                    active = { active = it }
-                                )
-
-                            },
-                            contentWindowInsets = WindowInsets(0.dp),
-                        ) { innerPadding ->
-
-                            when (aniUiState) {
-                                is AnimeUiState.Loading -> Text(text = "Loading")
-                                is AnimeUiState.Success -> {
-                                    Column(
-                                        Modifier
-                                            .fillMaxSize()
-                                            .padding(innerPadding)
-                                    ) {
-                                        PhotoGrid(
-                                            list = aniUiState.animeList,
-                                            contentPaddingValues = contentPaddingValues,
-                                            onClick = onClick
-                                        )
-                                    }
-                                }
-                                is AnimeUiState.Error -> Text(text = "Error")
-                            }
-
-
-                        }
-
-                    } else if (pagerState.currentPage == 1) {
-                        Scaffold(
-                            topBar = {
-                                MalSearch(
-                                    query = viewModel.userInput,
-                                    onQueryChanged = { viewModel.onUserInputChanged(it) },
-                                    onKeyboardDone = { viewModel.getManga(viewModel.userInput) },
-                                    active = { active = it }
-                                )
-
-                            },
-                            contentWindowInsets = WindowInsets(0.dp),
-                        ) { innerPadding ->
-
-                            when (mangaUiState){
-                                is MangaUiState.Loading -> Text(text = "Loading")
-                                is MangaUiState.Success -> {
-                                    Column(
-                                        Modifier
-                                            .fillMaxSize()
-                                            .padding(innerPadding)
-                                    ) {
-                                        MangaGrid( list = mangaUiState.mangaList, oncClick = {  })
-                                    }
-                                }
-                                is MangaUiState.Error -> Text(text = "Error")
-                            }
-
-
-                        }
-
-
-                    }
-                }
+        ) {
+        // Tab Row
+        TabRow(
+            selectedTabIndex = viewModel.selectedTabIndex,
+            modifier = Modifier.padding()
+        ) {
+            tabItems.forEachIndexed { index, item ->
+                Tab(
+                    selected = viewModel.selectedTabIndex == index,
+                    onClick = { viewModel.selectedTabIndex = index },
+                    text = { Text(text = item.title) }
+                )
             }
+        }
+
+        // Horizontal Pager
+        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { index ->
+            if (pagerState.currentPage == 0) {
+                Scaffold(
+                    topBar = {
+                        MalSearch(
+                            query = viewModel.userInput,
+                            onQueryChanged = { viewModel.onUserInputChanged(it) },
+                            onKeyboardDone = { viewModel.getAnimeList(viewModel.userInput) },
+                            active = { active = it }
+                        )
+
+                    },
+                    contentWindowInsets = WindowInsets(0.dp),
+                ) { innerPadding ->
+
+                    when (aniUiState) {
+                        is AnimeUiState.Loading -> Text(text = "Loading")
+                        is AnimeUiState.Success -> {
+                            Column(
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(innerPadding)
+                            ) {
+                                PhotoGrid(
+                                    list = aniUiState.animeList,
+                                    contentPaddingValues = contentPaddingValues,
+                                    onClick = onClick
+                                )
+                            }
+                        }
+
+                        is AnimeUiState.Error -> Text(text = "Error")
+                    }
+
+
+                }
+
+            } else if (pagerState.currentPage == 1) {
+                Scaffold(
+                    topBar = {
+                        MalSearch(
+                            query = viewModel.userInput,
+                            onQueryChanged = { viewModel.onUserInputChanged(it) },
+                            onKeyboardDone = { viewModel.getManga(viewModel.userInput) },
+                            active = { active = it }
+                        )
+
+                    },
+                    contentWindowInsets = WindowInsets(0.dp),
+                ) { innerPadding ->
+
+                    when (mangaUiState) {
+                        is MangaUiState.Loading -> Text(text = "Loading")
+                        is MangaUiState.Success -> {
+                            Column(
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(innerPadding)
+                            ) {
+                                MangaGrid(list = mangaUiState.mangaList, oncClick = mangaOnClick)
+                            }
+                        }
+
+                        is MangaUiState.Error -> Text(text = "Error")
+                    }
+
+
+                }
+
+
+            }
+        }
+    }
 
 }
 
 @Composable
-fun MangaGrid(list: List<MangaSummary>, oncClick: (MangaSummary) -> Unit){
-    LazyColumn(){
+fun MangaGrid(list: List<MangaSummary>, oncClick: (MangaSummary) -> Unit) {
+    LazyColumn() {
         items(items = list, key = { manga -> manga.mal_id }) { manga ->
             MangaColumn(manga = manga, onClick = { oncClick(manga) })
         }
@@ -206,13 +211,18 @@ fun MangaGrid(list: List<MangaSummary>, oncClick: (MangaSummary) -> Unit){
 }
 
 @Composable
-fun MangaColumn(manga: MangaSummary, onClick: (MangaSummary) -> Unit, modifier: Modifier = Modifier){
+fun MangaColumn(
+    manga: MangaSummary,
+    onClick: (MangaSummary) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 2.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         border = CardDefaults.outlinedCardBorder(),
+        onClick = { onClick(manga) }
     ) {
         Text(manga.title)
     }

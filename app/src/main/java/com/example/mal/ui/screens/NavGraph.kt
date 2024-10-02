@@ -68,12 +68,20 @@ fun BottomNavGraph(
                         viewModel.updateCurrentAnime(it)
                         navController.navigate(NavigationItems.Detail.route)
                     },
+                    mangaOnClick = {
+                        viewModel.updateCurrentManga(it)
+                        navController.navigate(NavigationItems.MangaDetail.route)
+                    }
                 )
 
             }
 
             composable(route = NavigationItems.Detail.route) {
                 AnimeDetail(viewModel = viewModel, uiState = uiState,contentPaddingValues = innerPadding)
+            }
+
+            composable(route = NavigationItems.MangaDetail.route){
+                MangaDetail( uiState = uiState, modifier = modifier.padding(innerPadding))
             }
 
 

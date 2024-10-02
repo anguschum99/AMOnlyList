@@ -2,6 +2,7 @@ package com.example.mal.network
 
 import com.example.mal.model.AnimeCharacterList
 import com.example.mal.model.AnimeList
+import com.example.mal.model.manga.Manga
 import com.example.mal.model.manga.MangaList
 import retrofit2.Response
 import retrofit2.http.GET
@@ -38,7 +39,7 @@ interface MalApiService {
     @GET("manga/{id}/full")
     suspend fun getMangaFull(
         @Path("id") id: Int
-    ): Response<MangaList>
+    ): Response<Manga>
 
 
 

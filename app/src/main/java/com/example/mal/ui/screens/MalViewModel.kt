@@ -13,6 +13,7 @@ import com.example.mal.MalApplication
 import com.example.mal.data.MalRepository
 import com.example.mal.model.AniChara
 import com.example.mal.model.Anime
+import com.example.mal.model.manga.Manga
 import com.example.mal.model.manga.MangaList
 import com.example.mal.model.manga.MangaSummary
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,7 +48,8 @@ data class MalUiState(
     val mangaState: MangaUiState,
     val animeState: AnimeUiState,
     val currentAnime: Anime? = null,
-    val currentAnimeCharacters: List<AniChara> = emptyList()
+    val currentAnimeCharacters: List<AniChara> = emptyList(),
+    val currentManga: Manga? = null
     //val currentManga: Manga? = null
 )
 
@@ -55,7 +57,6 @@ data class searchUiState(
     val aniUiState: AnimeUiState,
     val mangaUiState: MangaUiState
 )
-
 
 
 class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
@@ -69,13 +70,20 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
         private set
 
     private val _uiState = MutableStateFlow(
-        MalUiState(homeState = topAnimeUiState, mangaState = mangaUiState, animeState = animeUiState)
+        MalUiState(
+            homeState = topAnimeUiState,
+            mangaState = mangaUiState,
+            animeState = animeUiState
+        )
     )
     val uiState: StateFlow<MalUiState> = _uiState.asStateFlow()
 
-    var malUiState: searchUiState by mutableStateOf(searchUiState(aniUiState = animeUiState, mangaUiState = mangaUiState))
-
-
+    var malUiState: searchUiState by mutableStateOf(
+        searchUiState(
+            aniUiState = animeUiState,
+            mangaUiState = mangaUiState
+        )
+    )
 
 
     fun getAnimeList(query: String? = null, page: Int = 1, genre: String? = null) {
@@ -108,6 +116,18 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
         }
     }
 
+    fun getMangaFull(id: Int){
+        viewModelScope.launch {
+            val manga = malRepository.getMangaFull(id)
+                ?: throw Exception("Manga list is null")
+            _uiState.update {
+                it.copy(
+                    currentManga = manga
+                )
+            }
+        }
+    }
+
     fun getTopAnimeList(page: Int = 1, filter: String? = null) {
         viewModelScope.launch {
             topAnimeUiState = HomeAnimeUiState.Loading
@@ -128,7 +148,6 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
     fun getCharacterList(id: Int) {
         viewModelScope.launch {
             try {
-
                 val characterList = malRepository.getAnimeCharacters(id)
                     ?: throw Exception("Anime list is null")
 
@@ -143,10 +162,9 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
         }
     }
 
-
-
-
-
+    fun updateCurrentManga(manga: MangaSummary) {
+        getMangaFull(manga.mal_id)
+    }
 
 
     fun updateCurrentAnime(anime: Anime) {

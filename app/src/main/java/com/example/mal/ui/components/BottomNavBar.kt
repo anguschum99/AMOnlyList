@@ -56,6 +56,12 @@ sealed class NavigationItems(
         selectedIcon = Icons.Filled.Person,
         unselectedIcon = Icons.Outlined.Person
     )
+    object MangaDetail : NavigationItems(
+        route = "mangaDetail",
+        title = "MangaDetail",
+        selectedIcon = Icons.Filled.Person,
+        unselectedIcon = Icons.Outlined.Person
+    )
 }
 
 @Composable
