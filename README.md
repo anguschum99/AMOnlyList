@@ -15,6 +15,7 @@ Using Jetpack Compose, Retrofit, Coil, GSON Converter, okHTTp, Kotlin Coroutines
 ### WiP
  * Revamped Theming
  * Manga implementation
+ * Sort by different order
  * Dark Mode
  * Seasonal Anime - current, past and upcoming
  * Better loading screen
