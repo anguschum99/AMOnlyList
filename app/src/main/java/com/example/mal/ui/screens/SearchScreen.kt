@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,23 +39,32 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.mal.model.Anime
+import com.example.mal.model.manga.MangaList
+import com.example.mal.model.manga.MangaSummary
 import com.example.mal.ui.components.MalSearch
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun SearchScreen(
     viewModel: MalViewModel,
-    uiState: AnimeUiState,
+    aniUiState: AnimeUiState,
+    mangaUiState: MangaUiState,
     modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues,
     onClick: (Anime) -> Unit
 ) {
-    TabScreen(
-        viewModel = viewModel,
-        uiState = uiState,
-        modifier = modifier,
-        contentPaddingValues = contentPaddingValues,
-        onClick = onClick
-    )
+    Column(modifier = modifier) {
+        TabScreen(
+            viewModel = viewModel,
+            aniUiState = aniUiState,
+            mangaUiState = mangaUiState,
+            modifier = modifier,
+            contentPaddingValues = contentPaddingValues,
+            onClick = onClick
+
+        )
+    }
+
 
 }
 
@@ -62,13 +72,14 @@ fun SearchScreen(
 @Composable
 fun TabScreen(
     viewModel: MalViewModel,
-    uiState: AnimeUiState,
+    aniUiState: AnimeUiState,
+    mangaUiState: MangaUiState,
     modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues,
     onClick: (Anime) -> Unit
 ) {
     // Create a pager state with the number of tabs
-    var pagerState = rememberPagerState {
+    val pagerState = rememberPagerState {
         tabItems.size
     }
     // Remembers state of search bar
@@ -88,21 +99,18 @@ fun TabScreen(
 
     }
 
-    when (uiState) {
-        is AnimeUiState.Loading -> Text(text = "Loading")
-        is AnimeUiState.Success ->
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 47.dp),
+                    .padding(),
 
                 ) {
                 // Tab Row
                 TabRow(
                     selectedTabIndex = viewModel.selectedTabIndex,
-                    modifier = Modifier.padding(top = 35.dp)
+                    modifier = Modifier.padding()
                 ) {
                     tabItems.forEachIndexed { index, item ->
                         Tab(
@@ -114,7 +122,7 @@ fun TabScreen(
                 }
 
                 // Horizontal Pager
-                HorizontalPager(state = pagerState, modifier = Modifier) { index ->
+                HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { index ->
                     if (pagerState.currentPage == 0) {
                         Scaffold(
                             topBar = {
@@ -125,64 +133,98 @@ fun TabScreen(
                                     active = { active = it }
                                 )
 
-                            }
+                            },
+                            contentWindowInsets = WindowInsets(0.dp),
                         ) { innerPadding ->
-                            Column(
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(innerPadding)
-                            ) {
-                                PhotoGrid(
-                                    list = uiState.animeList,
-                                    contentPaddingValues = contentPaddingValues,
-                                    onClick = onClick
-                                )
+
+                            when (aniUiState) {
+                                is AnimeUiState.Loading -> Text(text = "Loading")
+                                is AnimeUiState.Success -> {
+                                    Column(
+                                        Modifier
+                                            .fillMaxSize()
+                                            .padding(innerPadding)
+                                    ) {
+                                        PhotoGrid(
+                                            list = aniUiState.animeList,
+                                            contentPaddingValues = contentPaddingValues,
+                                            onClick = onClick
+                                        )
+                                    }
+                                }
+                                is AnimeUiState.Error -> Text(text = "Error")
                             }
+
+
                         }
 
-                        Column(
-                            Modifier
-                                .fillMaxSize()
-                                .weight(1f)
-                        ) {
-                            Text(text = tabItems[index].title)
-                            MalSearch(
-                                query = viewModel.userInput,
-                                onQueryChanged = { viewModel.onUserInputChanged(it) },
-                                onKeyboardDone = { viewModel.getAnimeList(viewModel.userInput) },
-                                active = { active = it }
-                            )
-                            Text("frog")
-                        }
                     } else if (pagerState.currentPage == 1) {
-                        Box(
-                            Modifier.fillMaxSize(),
-                        ) {
-                            Text(text = tabItems[index].title)
-                            MalSearch(
-                                query = viewModel.userInput,
-                                onQueryChanged = { viewModel.onUserInputChanged(it) },
-                                onKeyboardDone = { viewModel.getAnimeList(viewModel.userInput) },
-                                active = { active = it }
-                            )
+                        Scaffold(
+                            topBar = {
+                                MalSearch(
+                                    query = viewModel.userInput,
+                                    onQueryChanged = { viewModel.onUserInputChanged(it) },
+                                    onKeyboardDone = { viewModel.getManga(viewModel.userInput) },
+                                    active = { active = it }
+                                )
+
+                            },
+                            contentWindowInsets = WindowInsets(0.dp),
+                        ) { innerPadding ->
+
+                            when (mangaUiState){
+                                is MangaUiState.Loading -> Text(text = "Loading")
+                                is MangaUiState.Success -> {
+                                    Column(
+                                        Modifier
+                                            .fillMaxSize()
+                                            .padding(innerPadding)
+                                    ) {
+                                        MangaGrid( list = mangaUiState.mangaList, oncClick = {  })
+                                    }
+                                }
+                                is MangaUiState.Error -> Text(text = "Error")
+                            }
+
+
                         }
+
+
                     }
                 }
             }
 
-        is AnimeUiState.Error -> Text(text = "Error")
+}
 
+@Composable
+fun MangaGrid(list: List<MangaSummary>, oncClick: (MangaSummary) -> Unit){
+    LazyColumn(){
+        items(items = list, key = { manga -> manga.mal_id }) { manga ->
+            MangaColumn(manga = manga, onClick = { oncClick(manga) })
+        }
     }
 }
+
+@Composable
+fun MangaColumn(manga: MangaSummary, onClick: (MangaSummary) -> Unit, modifier: Modifier = Modifier){
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        border = CardDefaults.outlinedCardBorder(),
+    ) {
+        Text(manga.title)
+    }
+}
+
 
 @Composable
 fun AnimeCard(
     anime: Anime,
     onClick: (Anime) -> Unit,
     modifier: Modifier = Modifier
-)
-
-{
+) {
 
 
     Column(modifier = modifier) {
@@ -206,7 +248,7 @@ fun AnimeCard(
                         .aspectRatio(1f)
                         .padding(end = 1.dp)
                 )
-                Text(anime.title ?: "null", modifier = Modifier.padding(8.dp))
+                Text(anime.title, modifier = Modifier.padding(8.dp))
                 Text("")
 
             }
@@ -218,7 +260,7 @@ fun AnimeCard(
 @Composable
 fun AnimeColumn(anime: Anime, onClick: (Anime) -> Unit, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 2.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -240,13 +282,13 @@ fun AnimeColumn(anime: Anime, onClick: (Anime) -> Unit, modifier: Modifier = Mod
                 modifier = Modifier.padding(5.dp),
             ) {
                 Text(
-                    anime.title ?: "null",
+                    anime.title,
                     style = androidx.compose.material3.MaterialTheme.typography.titleMedium
                 )
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        anime.type ?: "Unknown",
+                        anime.type,
                         modifier = Modifier
                             .background(
                                 shape = androidx.compose.foundation.shape.RoundedCornerShape(5.dp),
@@ -266,9 +308,7 @@ fun AnimeColumn(anime: Anime, onClick: (Anime) -> Unit, modifier: Modifier = Mod
                     text =
                     if (anime.year == 0) {
                         ""
-                    } else if (anime.year == null) {
-                        "null"
-                    } else {
+                    } else run {
                         anime.year.toString()
                     }
                 )
@@ -288,21 +328,13 @@ fun PhotoGrid(
     onClick: (Anime) -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Bottom,
-
-        ) {
-        LazyColumn(
-            modifier = Modifier
-                .padding(8.dp)
-                .weight(1f)
-                .fillMaxSize(),
-        ) {
+        modifier = Modifier.padding(top = 5.dp),
+    ) {
+        LazyColumn() {
             items(items = list, key = { anime -> anime.mal_id }) { anime ->
                 AnimeColumn(anime = anime, onClick = { onClick(anime) })
             }
         }
-
     }
 }
 

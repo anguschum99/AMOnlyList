@@ -2,8 +2,7 @@ package com.example.mal.network
 
 import com.example.mal.model.AnimeCharacterList
 import com.example.mal.model.AnimeList
-import com.example.mal.model.CharacterList
-import com.example.mal.model.MangaList
+import com.example.mal.model.manga.MangaList
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -36,15 +35,18 @@ interface MalApiService {
         @Query("genre") genre: String? = null
     ): Response<MangaList>
 
+    @GET("manga/{id}/full")
+    suspend fun getMangaFull(
+        @Path("id") id: Int
+    ): Response<MangaList>
+
+
+
 //    @GET("top/manga")
 //    suspend fun getTopMangaList(
 //        @Query("page") page: Int,
 //        @Query("filter") filter: String? = null
 //    ): Response<MangaList>
 
-    @GET("characters")
-    suspend fun getCharacterList(
-        @Query("mal_id") mal_id: String,
-    ): Response<CharacterList>
 
 }

@@ -13,7 +13,8 @@ import com.example.mal.MalApplication
 import com.example.mal.data.MalRepository
 import com.example.mal.model.AniChara
 import com.example.mal.model.Anime
-import com.example.mal.model.Manga
+import com.example.mal.model.manga.MangaList
+import com.example.mal.model.manga.MangaSummary
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,7 +36,7 @@ sealed interface HomeAnimeUiState {
 }
 
 sealed interface MangaUiState {
-    data class Success(val mangaList: List<Manga>) : MangaUiState
+    data class Success(val mangaList: List<MangaSummary>) : MangaUiState
     object Error : MangaUiState
     object Loading : MangaUiState
 }
@@ -43,10 +44,18 @@ sealed interface MangaUiState {
 
 data class MalUiState(
     val homeState: HomeAnimeUiState,
+    val mangaState: MangaUiState,
+    val animeState: AnimeUiState,
     val currentAnime: Anime? = null,
     val currentAnimeCharacters: List<AniChara> = emptyList()
     //val currentManga: Manga? = null
 )
+
+data class searchUiState(
+    val aniUiState: AnimeUiState,
+    val mangaUiState: MangaUiState
+)
+
 
 
 class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
@@ -56,21 +65,18 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
     var topAnimeUiState: HomeAnimeUiState by mutableStateOf(HomeAnimeUiState.Loading)
         private set
 
+    var mangaUiState: MangaUiState by mutableStateOf(MangaUiState.Loading)
+        private set
+
     private val _uiState = MutableStateFlow(
-        MalUiState(homeState = topAnimeUiState)
+        MalUiState(homeState = topAnimeUiState, mangaState = mangaUiState, animeState = animeUiState)
     )
     val uiState: StateFlow<MalUiState> = _uiState.asStateFlow()
 
+    var malUiState: searchUiState by mutableStateOf(searchUiState(aniUiState = animeUiState, mangaUiState = mangaUiState))
 
-    fun frog(uiState: AnimeUiState, query: String?, page: Int = 1) {
-        getAnimeList(query, page)
-    }
 
-    fun getAnime() {
-        _uiState.update {
-            it.copy(homeState = topAnimeUiState)
-        }
-    }
+
 
     fun getAnimeList(query: String? = null, page: Int = 1, genre: String? = null) {
         viewModelScope.launch {
@@ -83,6 +89,21 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
                 AnimeUiState.Error
             } catch (e: retrofit2.HttpException) {
                 AnimeUiState.Error
+            }
+        }
+    }
+
+    fun getManga(query: String? = null, page: Int = 1, genre: String? = null) {
+        viewModelScope.launch {
+            mangaUiState = MangaUiState.Loading
+            mangaUiState = try {
+                val mangaList = malRepository.getManga(query ?: "", page, genre)
+                    ?: throw Exception("Manga list is null")
+                MangaUiState.Success(mangaList)
+            } catch (e: Exception) {
+                MangaUiState.Error
+            } catch (e: retrofit2.HttpException) {
+                MangaUiState.Error
             }
         }
     }
@@ -105,11 +126,12 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
     }
 
     fun getCharacterList(id: Int) {
-        var ani = emptyList<AniChara>()
         viewModelScope.launch {
             try {
+
                 val characterList = malRepository.getAnimeCharacters(id)
                     ?: throw Exception("Anime list is null")
+
                 _uiState.update {
                     it.copy(
                         currentAnimeCharacters = characterList
@@ -119,17 +141,12 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
                 e.printStackTrace()
             }
         }
-        println(ani)
     }
 
 
 
 
-    fun getManga(query: String? = null, page: Int = 1, genre: String? = null) {
-        viewModelScope.launch {
 
-        }
-    }
 
 
     fun updateCurrentAnime(anime: Anime) {
@@ -154,6 +171,7 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
     init {
         getAnimeList()
         getTopAnimeList()
+        getManga()
     }
 
     companion object {

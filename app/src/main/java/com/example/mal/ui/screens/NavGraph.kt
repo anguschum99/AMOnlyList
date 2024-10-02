@@ -1,6 +1,7 @@
 package com.example.mal.ui.screens
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -59,8 +60,9 @@ fun BottomNavGraph(
             composable(route = NavigationItems.Search.route) {
                 SearchScreen(
                     viewModel = viewModel,
-                    uiState = viewModel.animeUiState,
-                    modifier = modifier,
+                    aniUiState = viewModel.animeUiState,
+                    mangaUiState = viewModel.mangaUiState,
+                    modifier = modifier.padding(innerPadding),
                     contentPaddingValues = innerPadding,
                     onClick = {
                         viewModel.updateCurrentAnime(it)

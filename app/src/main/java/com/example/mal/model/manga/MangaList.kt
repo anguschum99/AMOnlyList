@@ -1,11 +1,11 @@
-package com.example.mal.model
+package com.example.mal.model.manga
 
 data class MangaList(
-    val data: List<Manga>,
+    val data: List<MangaSummary>,
     val pagination: Pagination
 )
 
-data class Manga(
+data class MangaSummary(
     val approved: Boolean,
     val authors: List<Author>,
     val background: String,
@@ -38,6 +38,12 @@ data class Manga(
     val volumes: Int
 )
 
+data class Pagination(
+    val current_page: Int,
+    val has_next_page: Boolean,
+    val items: Items,
+    val last_visible_page: Int
+)
 
 data class Author(
     val mal_id: Int,
@@ -46,7 +52,24 @@ data class Author(
     val url: String
 )
 
+data class Demographic(
+    val mal_id: Int,
+    val name: String,
+    val type: String,
+    val url: String
+)
 
+data class Genre(
+    val mal_id: Int,
+    val name: String,
+    val type: String,
+    val url: String
+)
+
+data class Images(
+    val jpg: Jpg,
+    val webp: Webp
+)
 
 data class Published(
     val from: String,
@@ -62,3 +85,49 @@ data class Serialization(
     val url: String
 )
 
+data class Theme(
+    val mal_id: Int,
+    val name: String,
+    val type: String,
+    val url: String
+)
+
+data class Title(
+    val title: String,
+    val type: String
+)
+
+data class Jpg(
+    val image_url: String,
+    val large_image_url: String,
+    val small_image_url: String
+)
+
+data class Webp(
+    val image_url: String,
+    val large_image_url: String,
+    val small_image_url: String
+)
+
+data class Prop(
+    val from: From,
+    val to: To
+)
+
+data class From(
+    val day: Int,
+    val month: Int,
+    val year: Int
+)
+
+data class To(
+    val day: Int,
+    val month: Int,
+    val year: Int
+)
+
+data class Items(
+    val count: Int,
+    val per_page: Int,
+    val total: Int
+)

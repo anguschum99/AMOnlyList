@@ -23,4 +23,11 @@ data class VoiceActor(
     val person: Person
 )
 
+data class Person(
+    val images: Images,
+    val mal_id: Int,
+    val name: String,
+    val url: String
+)
+
 

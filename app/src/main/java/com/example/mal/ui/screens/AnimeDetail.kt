@@ -176,6 +176,12 @@ fun AnimeDetail(
             CharacterList(list = uiState.currentAnimeCharacters)
         }
 
+        HorizontalDivider(Modifier.padding(10.dp))
+
+
+
+
+
     }
 }
 
