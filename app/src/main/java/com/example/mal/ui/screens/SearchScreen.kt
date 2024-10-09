@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -224,9 +226,44 @@ fun MangaColumn(
         border = CardDefaults.outlinedCardBorder(),
         onClick = { onClick(manga) }
     ) {
-        Text(manga.title)
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Row {
+                AsyncImage(
+                    model = ImageRequest.Builder(context = LocalContext.current)
+                        .data(manga.images.jpg.image_url)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+
+                Column {
+                    Text(manga.title, style = MaterialTheme.typography.titleMedium)
+                    Text(manga.status)
+                    Text(manga.type)
+                    Text("${manga.score.toString()} Rating")
+                }
+
+//                Spacer(Modifier.weight(1f))
+//
+//                Text(
+//                    manga.score.toString(),
+//                    modifier = Modifier
+//                        .padding(end = 28.dp)
+//                        .align(Alignment.CenterVertically),
+//                    style = MaterialTheme.typography.titleLarge
+//                )
+            }
+
+        }
+
+
     }
+
+
 }
+
 
 
 @Composable

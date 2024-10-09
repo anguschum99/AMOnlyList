@@ -31,7 +31,18 @@ fun BottomNavGraph(
             TopBar(
                 currentScreen = currentDestination?.route ?: "",
                 navController = navController,
-                canNavigateBack = currentDestination?.route == NavigationItems.Detail.route,
+                canNavigateBack =
+                when (currentDestination?.route) {
+                    NavigationItems.Detail.route -> {
+                        true
+                    }
+                    NavigationItems.MangaDetail.route -> {
+                        true
+                    }
+                    else -> {
+                        false
+                    }
+                },
                 navigateUp = { navController.navigateUp() }
             )
         },
