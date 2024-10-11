@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -16,11 +17,15 @@ import com.example.mal.model.Anime
 import com.example.mal.model.manga.Manga
 import com.example.mal.model.manga.MangaList
 import com.example.mal.model.manga.MangaSummary
+import com.example.mal.model.seasons.Season
+import com.example.mal.model.seasons.SeasonList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.Response
 
 sealed interface AnimeUiState {
     data class Success(val animeList: List<Anime>) : AnimeUiState
@@ -40,6 +45,12 @@ sealed interface MangaUiState {
     data class Success(val mangaList: List<MangaSummary>) : MangaUiState
     object Error : MangaUiState
     object Loading : MangaUiState
+}
+
+sealed interface CurrentSeasonUiState {
+    data class Success(val seasonList: Season, val page: Int = 1) : CurrentSeasonUiState
+    object Error : CurrentSeasonUiState
+    object Loading : CurrentSeasonUiState
 }
 
 
@@ -67,6 +78,9 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
         private set
 
     var mangaUiState: MangaUiState by mutableStateOf(MangaUiState.Loading)
+        private set
+
+    var currentSeasonState: CurrentSeasonUiState by mutableStateOf(CurrentSeasonUiState.Loading)
         private set
 
     private val _uiState = MutableStateFlow(
@@ -162,6 +176,24 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
         }
     }
 
+    fun getCurrentSeason(page: Int = 1) {
+        viewModelScope.launch {
+            currentSeasonState = CurrentSeasonUiState.Loading
+            currentSeasonState = try {
+                val seasonList = malRepository.getSeasonNow(page)
+                    ?: throw Exception("Season list is null")
+                CurrentSeasonUiState.Success(seasonList)
+            } catch (e: Exception) {
+                CurrentSeasonUiState.Error
+            } catch (e: retrofit2.HttpException) {
+                CurrentSeasonUiState.Error
+            }
+        }
+    }
+
+
+
+
     fun updateCurrentManga(manga: MangaSummary) {
         getMangaFull(manga.mal_id)
     }
@@ -187,9 +219,18 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
     }
 
     init {
-        getAnimeList()
-        getTopAnimeList()
-        getManga()
+
+        viewModelScope.launch {
+            getTopAnimeList()
+            delay(timeMillis = 1000)
+            getAnimeList()
+            delay(timeMillis = 1000)
+            getManga()
+            delay(timeMillis = 1000)
+            getCurrentSeason()
+
+        }
+
     }
 
     companion object {

@@ -43,6 +43,7 @@ import coil.request.ImageRequest
 import com.example.mal.model.Anime
 import com.example.mal.model.manga.MangaList
 import com.example.mal.model.manga.MangaSummary
+import com.example.mal.ui.components.ErrorScreen
 import com.example.mal.ui.components.MalSearch
 import kotlinx.coroutines.flow.StateFlow
 
@@ -157,7 +158,10 @@ fun TabScreen(
                             }
                         }
 
-                        is AnimeUiState.Error -> Text(text = "Error")
+                        is AnimeUiState.Error ->
+                            Column {
+                                ErrorScreen(retryAction = { viewModel.getAnimeList() })
+                            }
                     }
 
 

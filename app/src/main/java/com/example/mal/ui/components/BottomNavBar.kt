@@ -62,15 +62,7 @@ sealed class NavigationItems(
         selectedIcon = Icons.Filled.Person,
         unselectedIcon = Icons.Outlined.Person
     )
-}
 
-@Composable
-fun topNavBar(
-    navController: NavHostController,
-    canNavigateBack: Boolean,
-    navigateUp: () -> Unit,
-    modifier: Modifier = Modifier
-){
 
 }
 
@@ -132,6 +124,7 @@ fun RowScope.AddItem(
         selected = currentDestination?.route == screen.route,
         onClick = {
             navController.navigate(screen.route)
+
         },
     )
 

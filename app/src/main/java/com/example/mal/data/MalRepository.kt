@@ -8,7 +8,10 @@ import com.example.mal.model.AnimeList
 import com.example.mal.model.manga.Manga
 import com.example.mal.model.manga.MangaList
 import com.example.mal.model.manga.MangaSummary
+import com.example.mal.model.seasons.Season
+import com.example.mal.model.seasons.SeasonList
 import com.example.mal.network.MalApiService
+import retrofit2.Response
 
 interface MalRepository {
     suspend fun getAnimeList(query: String, page: Int, genre: String?): List<Anime>?
@@ -16,6 +19,7 @@ interface MalRepository {
     suspend fun getAnimeCharacters(id: Int): List<AniChara>?
     suspend fun getManga(query: String, page: Int, genre: String? = null): List<MangaSummary>?
     suspend fun getMangaFull(id: Int): Manga?
+    suspend fun getSeasonNow(page: Int): Season?
 }
 
 class NetworkMalRepository(
@@ -76,6 +80,20 @@ class NetworkMalRepository(
         }
     }
 
+    override suspend fun getSeasonNow(page: Int): Season? {
+//        return malApiService.getSeasonNow(page)
+//
+        return try{
+            val response = malApiService.getSeasonNow(page)
+            if (response.isSuccessful) response.body()
+            else throw NetworkErrorException(response.code().toString())
+        }catch (e: Exception){
+            e.printStackTrace()
+            null
+        }
+
+
+    }
 
 
 

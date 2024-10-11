@@ -28,6 +28,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.mal.model.Anime
 import com.example.mal.ui.components.ErrorScreen
+import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
@@ -57,7 +58,8 @@ fun HomeScreen(
 
             }
 
-            is HomeAnimeUiState.Error -> ErrorScreen(retryAction = viewModel::getTopAnimeList)
+            is HomeAnimeUiState.Error ->
+        ErrorScreen(retryAction = viewModel::getTopAnimeList)
 
         }
     }

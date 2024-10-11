@@ -95,6 +95,11 @@ fun BottomNavGraph(
                 MangaDetail( uiState = uiState, modifier = modifier.padding(innerPadding))
             }
 
+            composable(route = NavigationItems.Seasonal.route){
+                SeasonScreen(viewModel = viewModel, uiState = viewModel.currentSeasonState)
+            }
+
+
 
         }
 
