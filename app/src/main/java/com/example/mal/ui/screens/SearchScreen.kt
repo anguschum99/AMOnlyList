@@ -152,7 +152,6 @@ fun TabScreen(
                             ) {
                                 PhotoGrid(
                                     list = aniUiState.animeList,
-                                    contentPaddingValues = contentPaddingValues,
                                     onClick = onClick
                                 )
                             }
@@ -216,7 +215,6 @@ fun MangaGrid(list: List<MangaSummary>, oncClick: (MangaSummary) -> Unit) {
 fun MangaColumn(
     manga: MangaSummary,
     onClick: (MangaSummary) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Card(
         modifier = Modifier
@@ -305,7 +303,7 @@ fun AnimeCard(
 
 // Individual Card Handler
 @Composable
-fun AnimeColumn(anime: Anime, onClick: (Anime) -> Unit, modifier: Modifier = Modifier) {
+fun AnimeColumn(anime: Anime, onClick: (Anime) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -370,8 +368,6 @@ fun AnimeColumn(anime: Anime, onClick: (Anime) -> Unit, modifier: Modifier = Mod
 @Composable
 fun PhotoGrid(
     list: List<Anime>,
-    modifier: Modifier = Modifier,
-    contentPaddingValues: PaddingValues,
     onClick: (Anime) -> Unit
 ) {
     Column(
