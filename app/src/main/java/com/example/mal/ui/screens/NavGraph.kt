@@ -36,9 +36,11 @@ fun BottomNavGraph(
                     NavigationItems.Detail.route -> {
                         true
                     }
+
                     NavigationItems.MangaDetail.route -> {
                         true
                     }
+
                     else -> {
                         false
                     }
@@ -88,25 +90,30 @@ fun BottomNavGraph(
             }
 
             composable(route = NavigationItems.Detail.route) {
-                AnimeDetail(viewModel = viewModel, uiState = uiState,contentPaddingValues = innerPadding)
+                AnimeDetail(
+                    viewModel = viewModel,
+                    uiState = uiState,
+                    contentPaddingValues = innerPadding
+                )
             }
 
-            composable(route = NavigationItems.MangaDetail.route){
-                MangaDetail( uiState = uiState, modifier = modifier.padding(innerPadding))
+            composable(route = NavigationItems.MangaDetail.route) {
+                MangaDetail(uiState = uiState, modifier = modifier.padding(innerPadding))
             }
 
-            composable(route = NavigationItems.Seasonal.route){
-                SeasonScreen(viewModel = viewModel, uiState = viewModel.currentSeasonState)
-            }
+            composable(route = NavigationItems.Seasonal.route) {
 
+                SeasonScreen(
+                    viewModel = viewModel,
+                    uiState = viewModel.currentSeasonState,
+                    modifier = modifier.padding(innerPadding)
+                )
+            }
 
 
         }
 
     }
-
-
-
 
 
 }
