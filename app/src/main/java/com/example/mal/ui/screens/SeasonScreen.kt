@@ -106,7 +106,7 @@ fun PageButtons(
         }
     }
 }
-
+//
 
 @Composable
 fun SeasonCard(data: Data) {
