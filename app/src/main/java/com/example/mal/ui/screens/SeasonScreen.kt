@@ -18,6 +18,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -28,6 +32,7 @@ import coil.request.ImageRequest
 import com.example.mal.model.seasons.Data
 import com.example.mal.model.seasons.Season
 import com.example.mal.ui.components.ErrorScreen
+import java.lang.reflect.Array.set
 
 @Composable
 fun SeasonScreen(
@@ -36,19 +41,34 @@ fun SeasonScreen(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
+    val number = 1
+    var pager by remember{ mutableIntStateOf(1) }
+
     Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState),
     ) {
+
         when (uiState) {
             is CurrentSeasonUiState.Loading -> Text("Loading")
             is CurrentSeasonUiState.Success -> {
+                val lastVisiblePage = uiState.seasonList.pagination.last_visible_page
+
                 Column(
                     modifier = modifier
                         .weight(1f)
+
                 ) {
-                        SeasonGrid(uiState.seasonList.data)
+                    PageButtons(
+                        uiState,
+                        nextClick = {
+                            pager = updatePageNumber(pager, lastVisiblePage)
+                            viewModel.getCurrentSeason(pager)
+
+                        }
+                    )
+                    SeasonGrid(uiState.seasonList.data)
                 }
             }
 
@@ -59,13 +79,29 @@ fun SeasonScreen(
     }
 }
 
+fun updatePageNumber(page: Int, maximum:Int): Int{
+    val nextPage = page + 1
+    return if (page < 1) {
+        1
+    } else if (page > maximum) {
+        maximum
+    }
+    else {
+        return nextPage
+    }
+}
+
+
 @Composable
-fun PageButtons() {
-    Row {
+fun PageButtons(
+    uiState: CurrentSeasonUiState,
+    nextClick: () -> Unit,
+) {
+    Row(horizontalArrangement = Arrangement.SpaceBetween) {
         Button(onClick = { /*TODO*/ }) {
             Text(text = "Previous")
         }
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = { nextClick() }) {
             Text(text = "Next")
         }
     }
@@ -107,6 +143,5 @@ fun SeasonGrid(
             }
 
         }
-        PageButtons()
     }
 }
