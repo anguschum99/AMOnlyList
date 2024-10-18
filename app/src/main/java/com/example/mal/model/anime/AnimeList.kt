@@ -1,11 +1,11 @@
-package com.example.mal.model
+package com.example.mal.model.anime
 
 data class AnimeList(
-    val data: List<Anime>,
+    val data: List<AnimeSummary>,
     val pagination: Pagination
 )
 
-data class Anime(
+data class AnimeSummary(
     val aired: Aired,
     val airing: Boolean,
     val approved: Boolean,

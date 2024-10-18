@@ -5,11 +5,9 @@ package com.example.mal.ui.screens
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,12 +38,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.mal.model.Anime
-import com.example.mal.model.manga.MangaList
+import com.example.mal.model.anime.Anime
+import com.example.mal.model.anime.AnimeSummary
 import com.example.mal.model.manga.MangaSummary
 import com.example.mal.ui.components.ErrorScreen
 import com.example.mal.ui.components.MalSearch
-import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun SearchScreen(
@@ -54,7 +51,7 @@ fun SearchScreen(
     mangaUiState: MangaUiState,
     modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues,
-    onClick: (Anime) -> Unit,
+    onClick: (AnimeSummary) -> Unit,
     mangaOnClick: (MangaSummary) -> Unit
 ) {
     Column(modifier = modifier) {
@@ -81,7 +78,7 @@ fun TabScreen(
     mangaUiState: MangaUiState,
     modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues,
-    onClick: (Anime) -> Unit,
+    onClick: (AnimeSummary) -> Unit,
     mangaOnClick: (MangaSummary) -> Unit
 ) {
     // Create a pager state with the number of tabs
@@ -270,8 +267,8 @@ fun MangaColumn(
 
 @Composable
 fun AnimeCard(
-    anime: Anime,
-    onClick: (Anime) -> Unit,
+    anime: AnimeSummary,
+    onClick: (AnimeSummary) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -307,7 +304,7 @@ fun AnimeCard(
 
 // Individual Card Handler
 @Composable
-fun AnimeColumn(anime: Anime, onClick: (Anime) -> Unit) {
+fun AnimeColumn(anime: AnimeSummary, onClick: (AnimeSummary) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -371,8 +368,8 @@ fun AnimeColumn(anime: Anime, onClick: (Anime) -> Unit) {
 
 @Composable
 fun PhotoGrid(
-    list: List<Anime>,
-    onClick: (Anime) -> Unit
+    list: List<AnimeSummary>,
+    onClick: (AnimeSummary) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(top = 5.dp),

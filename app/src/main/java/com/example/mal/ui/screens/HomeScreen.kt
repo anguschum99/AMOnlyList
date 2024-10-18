@@ -1,7 +1,6 @@
 package com.example.mal.ui.screens
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,16 +25,16 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.mal.model.Anime
+import com.example.mal.model.anime.Anime
+import com.example.mal.model.anime.AnimeSummary
 import com.example.mal.ui.components.ErrorScreen
-import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
     viewModel: MalViewModel,
     uiState: HomeAnimeUiState,
     contentPaddingValues: PaddingValues,
-    onClick: (Anime) -> Unit,
+    onClick: (AnimeSummary) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
@@ -66,7 +65,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun GenreCard(anime: Anime, onClick: (Anime) -> Unit, modifier: Modifier = Modifier) {
+fun GenreCard(anime: AnimeSummary, onClick: (AnimeSummary) -> Unit, modifier: Modifier = Modifier) {
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -108,7 +107,7 @@ fun GenreCard(anime: Anime, onClick: (Anime) -> Unit, modifier: Modifier = Modif
 
 
 @Composable
-fun GenreRow(list: List<Anime>, onClick: (Anime) -> Unit) {
+fun GenreRow(list: List<AnimeSummary>, onClick: (AnimeSummary) -> Unit) {
     LazyRow {
         items(list, key = { anime -> anime.mal_id }) { anime ->
             GenreCard(anime = anime, onClick = onClick)

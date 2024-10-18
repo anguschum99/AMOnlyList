@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.mal.model.seasons.Data
 import com.example.mal.ui.components.BottomNavBar
 import com.example.mal.ui.components.NavigationItems
 import com.example.mal.ui.components.TopBar
@@ -64,7 +65,7 @@ fun BottomNavGraph(
                     uiState = viewModel.topAnimeUiState,
                     contentPaddingValues = innerPadding,
                     onClick = {
-                        viewModel.updateCurrentAnime(it)
+                        viewModel.updateCurrentAnime(it.mal_id)
                         navController.navigate(NavigationItems.Detail.route)
                     },
 
@@ -78,11 +79,11 @@ fun BottomNavGraph(
                     modifier = modifier.padding(innerPadding),
                     contentPaddingValues = innerPadding,
                     onClick = {
-                        viewModel.updateCurrentAnime(it)
+                        viewModel.updateCurrentAnime(it.mal_id)
                         navController.navigate(NavigationItems.Detail.route)
                     },
                     mangaOnClick = {
-                        viewModel.updateCurrentManga(it)
+                        viewModel.updateCurrentManga(it.mal_id)
                         navController.navigate(NavigationItems.MangaDetail.route)
                     }
                 )
@@ -93,7 +94,10 @@ fun BottomNavGraph(
                 AnimeDetail(
                     viewModel = viewModel,
                     uiState = uiState,
-                    contentPaddingValues = innerPadding
+                    contentPaddingValues = innerPadding,
+                    retryAction = {
+                        viewModel::getAnimeFull
+                    }
                 )
             }
 
@@ -106,6 +110,10 @@ fun BottomNavGraph(
                 SeasonScreen(
                     viewModel = viewModel,
                     uiState = viewModel.currentSeasonState,
+                    onClick = {
+                        viewModel.updateCurrentAnime(it.mal_id)
+                        navController.navigate(NavigationItems.Detail.route)
+                    },
                     modifier = modifier.padding(innerPadding)
                 )
             }

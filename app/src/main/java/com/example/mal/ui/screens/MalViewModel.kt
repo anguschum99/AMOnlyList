@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -13,28 +12,26 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mal.MalApplication
 import com.example.mal.data.MalRepository
 import com.example.mal.model.AniChara
-import com.example.mal.model.Anime
+import com.example.mal.model.anime.Anime
+import com.example.mal.model.anime.AnimeSummary
 import com.example.mal.model.manga.Manga
-import com.example.mal.model.manga.MangaList
 import com.example.mal.model.manga.MangaSummary
 import com.example.mal.model.seasons.Season
-import com.example.mal.model.seasons.SeasonList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.Response
 
 sealed interface AnimeUiState {
-    data class Success(val animeList: List<Anime>) : AnimeUiState
+    data class Success(val animeList: List<AnimeSummary>) : AnimeUiState
     object Error : AnimeUiState
     object Loading : AnimeUiState
 }
 
 sealed interface HomeAnimeUiState {
-    data class Success(val topAnimeList: List<Anime>, val topAiringList: List<Anime>) :
+    data class Success(val topAnimeList: List<AnimeSummary>, val topAiringList: List<AnimeSummary>) :
         HomeAnimeUiState
 
     object Error : HomeAnimeUiState
@@ -61,7 +58,6 @@ data class MalUiState(
     val currentAnime: Anime? = null,
     val currentAnimeCharacters: List<AniChara> = emptyList(),
     val currentManga: Manga? = null
-    //val currentManga: Manga? = null
 )
 
 data class searchUiState(
@@ -92,12 +88,7 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
     )
     val uiState: StateFlow<MalUiState> = _uiState.asStateFlow()
 
-    var malUiState: searchUiState by mutableStateOf(
-        searchUiState(
-            aniUiState = animeUiState,
-            mangaUiState = mangaUiState
-        )
-    )
+
 
 
     fun getAnimeList(query: String? = null, page: Int = 1, genre: String? = null) {
@@ -130,6 +121,18 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
         }
     }
 
+    fun getAnimeFull(id: Int){
+        viewModelScope.launch {
+            val anime = malRepository.getAnimeFull(id)
+                ?: throw Exception("Anime is null")
+            _uiState.update {
+                it.copy(
+                    currentAnime = anime
+                )
+            }
+        }
+    }
+
     fun getMangaFull(id: Int){
         viewModelScope.launch {
             val manga = malRepository.getMangaFull(id)
@@ -145,6 +148,9 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
     fun getTopAnimeList(page: Int = 1, filter: String? = null) {
         viewModelScope.launch {
             topAnimeUiState = HomeAnimeUiState.Loading
+
+            delay(1000)
+
             topAnimeUiState = try {
                 val animeList = malRepository.getTopAnimeList(page)
                     ?: throw Exception("Anime list is null")
@@ -194,18 +200,15 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
 
 
 
-    fun updateCurrentManga(manga: MangaSummary) {
-        getMangaFull(manga.mal_id)
+
+    fun updateCurrentManga(mal_id: Int) {
+        getMangaFull(mal_id)
     }
 
 
-    fun updateCurrentAnime(anime: Anime) {
-        getCharacterList(anime.mal_id)
-        _uiState.update {
-            it.copy(
-                currentAnime = anime,
-            )
-        }
+    fun updateCurrentAnime(malId: Int) {
+        getAnimeFull(malId)
+        getCharacterList(malId)
     }
 
 
@@ -221,10 +224,11 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
     init {
 
         viewModelScope.launch {
+            delay(timeMillis = 1000)
             getTopAnimeList()
-            delay(timeMillis = 1000)
+            delay(timeMillis = 5000)
             getAnimeList()
-            delay(timeMillis = 1000)
+            delay(timeMillis = 5000)
             getManga()
             delay(timeMillis = 1000)
             getCurrentSeason()

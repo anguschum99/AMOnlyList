@@ -1,5 +1,7 @@
 package com.example.mal.model
 
+import com.example.mal.model.anime.Images
+
 data class AnimeCharacterList(
     val data: List<AniChara>
 )

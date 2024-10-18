@@ -41,17 +41,22 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.mal.R
 import com.example.mal.model.AniChara
+import com.example.mal.ui.components.ErrorScreen
 
 @Composable
 fun AnimeDetail(
     viewModel: MalViewModel,
     uiState: MalUiState,
-    contentPaddingValues: PaddingValues = PaddingValues(0.dp)
+    contentPaddingValues: PaddingValues = PaddingValues(0.dp),
+    retryAction : () -> Unit
 ) {
     val scrollState = rememberScrollState()
 
     var expanded by rememberSaveable { mutableStateOf(false) }
 
+    when (uiState.currentAnime) {
+        null -> ErrorScreen(retryAction = retryAction)
+    }
 
     Column(
         verticalArrangement = Arrangement.Top,
@@ -65,7 +70,7 @@ fun AnimeDetail(
         Row() {
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(uiState.currentAnime?.images?.jpg?.image_url)
+                    .data(uiState.currentAnime?.data?.images?.jpg?.image_url ?: "")
                     .crossfade(true)
                     .build(),
                 contentDescription = null,
@@ -92,7 +97,7 @@ fun AnimeDetail(
                     Spacer(Modifier.weight(0.1f))
 
                     Text(
-                        uiState.currentAnime?.score.toString(),
+                        uiState.currentAnime?.data?.score.toString() ?: "",
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -103,7 +108,7 @@ fun AnimeDetail(
 
                     Text("#")
                     Text(
-                        uiState.currentAnime?.rank?.toString() ?: "",
+                        uiState.currentAnime?.data?.rank?.toString() ?: "",
                         modifier = Modifier.padding(),
                         style = MaterialTheme.typography.titleMedium
                     )
@@ -114,7 +119,7 @@ fun AnimeDetail(
 
                     Text("#")
                     Text(
-                        uiState.currentAnime?.popularity?.toString() ?: "",
+                        uiState.currentAnime?.data?.popularity?.toString() ?: "",
                         modifier = Modifier.padding(),
                         style = MaterialTheme.typography.titleMedium
                     )
@@ -123,7 +128,7 @@ fun AnimeDetail(
                     Spacer(Modifier.weight(0.1f))
 
                     Text(
-                        uiState.currentAnime?.type ?: "",
+                        uiState.currentAnime?.data?.type ?: "",
                         modifier = Modifier.padding(),
                     )
                 }
@@ -131,7 +136,7 @@ fun AnimeDetail(
                     Spacer(Modifier.weight(0.1f))
 
                     Text(
-                        uiState.currentAnime?.status ?: "",
+                        uiState.currentAnime?.data?.status ?: "",
                         modifier = Modifier.padding(),
                     )
                 }
@@ -139,7 +144,7 @@ fun AnimeDetail(
                     Spacer(Modifier.weight(0.1f))
 
                     Text(
-                        uiState.currentAnime?.episodes.toString() ?: "",
+                        uiState.currentAnime?.data?.episodes.toString() ?: "",
                         modifier = Modifier.padding(),
                     )
                     Text(" Episodes")
@@ -155,21 +160,24 @@ fun AnimeDetail(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                uiState.currentAnime?.title.toString(),
+                uiState.currentAnime?.data?.title.toString() ?: "",
                 modifier = Modifier.padding(16.dp),
                 style = MaterialTheme.typography.titleLarge
             )
 
             HorizontalDivider(Modifier.padding(10.dp))
 
-            Text(uiState.currentAnime?.synopsis.toString())
+            Text(
+                uiState.currentAnime?.data?.synopsis?: "",
+                modifier = Modifier.padding(10.dp)
+            )
 
             HorizontalDivider(Modifier.padding(10.dp))
 
         }
 
         Column {
-            if (uiState.currentAnimeCharacters.isEmpty()){
+            if (uiState.currentAnimeCharacters.isEmpty()) {
                 Text("No characters found")
             }
 
@@ -179,16 +187,15 @@ fun AnimeDetail(
         HorizontalDivider(Modifier.padding(10.dp))
 
 
-
-
-
     }
 }
 
 @Composable
-fun CharacterCard(aniChara: AniChara){
+fun CharacterCard(aniChara: AniChara) {
     Card(
-        modifier = Modifier.size(170.dp, 300.dp).padding(horizontal = 2.dp),
+        modifier = Modifier
+            .size(170.dp, 300.dp)
+            .padding(horizontal = 2.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 10.dp
         )
@@ -213,12 +220,13 @@ fun CharacterCard(aniChara: AniChara){
 }
 
 @Composable
-fun CharacterList(list: List<AniChara>){
+fun CharacterList(list: List<AniChara>) {
     LazyRow(
-        Modifier.fillMaxWidth()
+        Modifier
+            .fillMaxWidth()
             .size(150.dp, 250.dp)
     ) {
-        items(list,key = {list -> list.character.mal_id}){ list ->
+        items(list, key = { list -> list.character.mal_id }) { list ->
             CharacterCard(list)
         }
     }
