@@ -41,6 +41,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.mal.R
 import com.example.mal.model.AniChara
+import com.example.mal.model.anime.Entry
 import com.example.mal.ui.components.ErrorScreen
 
 @Composable
@@ -186,6 +187,21 @@ fun AnimeDetail(
 
         HorizontalDivider(Modifier.padding(10.dp))
 
+        Column {
+            if (uiState.currentAnime?.data?.relations?.isEmpty() == true) {
+                Text("No relations found")
+            }
+            else{
+                Text(
+                    uiState.currentAnime?.data?.relations?.get(0)?.relation.toString() ?: "",
+                    modifier = Modifier.padding(10.dp)
+
+                )
+                RelationList(list = uiState.currentAnime?.data?.relations?.get(0)?.entry ?: emptyList())
+
+            }
+
+        }
 
     }
 }
@@ -229,5 +245,29 @@ fun CharacterList(list: List<AniChara>) {
         items(list, key = { list -> list.character.mal_id }) { list ->
             CharacterCard(list)
         }
+    }
+}
+
+@Composable
+fun RelationList(list: List<Entry>){
+    LazyColumn(
+        Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .height(200.dp)
+    ) {
+        items(list, key = { list -> list.mal_id }) { list ->
+            RelationshipCard(list)
+        }
+    }
+}
+
+@Composable
+fun RelationshipCard(entry: Entry){
+    Card {
+        Text(entry.name)
+        Text(entry.type)
+        Text(entry.url)
+        Text(entry.mal_id.toString())
     }
 }
