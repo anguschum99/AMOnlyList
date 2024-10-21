@@ -42,6 +42,7 @@ import coil.request.ImageRequest
 import com.example.mal.R
 import com.example.mal.model.AniChara
 import com.example.mal.model.anime.Entry
+import com.example.mal.model.anime.Relation
 import com.example.mal.ui.components.ErrorScreen
 
 @Composable
@@ -197,7 +198,8 @@ fun AnimeDetail(
                     modifier = Modifier.padding(10.dp)
 
                 )
-                RelationList(list = uiState.currentAnime?.data?.relations?.get(0)?.entry ?: emptyList())
+                val relations = uiState.currentAnime?.data?.relations?.size ?: 0
+                RelationList(list = uiState.currentAnime?.data?.relations?.subList(0, relations))
 
             }
 
@@ -249,25 +251,21 @@ fun CharacterList(list: List<AniChara>) {
 }
 
 @Composable
-fun RelationList(list: List<Entry>){
-    LazyColumn(
-        Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .height(200.dp)
-    ) {
-        items(list, key = { list -> list.mal_id }) { list ->
-            RelationshipCard(list)
+fun RelationList(list: List<Relation>?){
+    LazyRow {
+        if (list != null) {
+            items(list, key = { list -> list.entry[0].mal_id }) { list ->
+                RelationshipCard(list.entry[0])
+            }
         }
     }
 }
 
 @Composable
 fun RelationshipCard(entry: Entry){
-    Card {
-        Text(entry.name)
+    Card(modifier = Modifier.size(150.dp, 100.dp)) {
         Text(entry.type)
-        Text(entry.url)
-        Text(entry.mal_id.toString())
+
+        Text(entry.name)
     }
 }
