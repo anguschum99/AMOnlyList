@@ -41,20 +41,58 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.mal.R
 import com.example.mal.model.AniChara
+import com.example.mal.model.anime.Anime
 import com.example.mal.model.anime.Entry
 import com.example.mal.model.anime.Relation
 import com.example.mal.ui.components.ErrorScreen
+
+
+@Composable
+fun preDetail(
+    viewModel: MalViewModel,
+    uiState: MalUiState,
+    altState: soloAnimeUiState,
+    contentPaddingValues: PaddingValues = PaddingValues(0.dp),
+    retryAction: () -> Unit,
+    onMangaClick: (Int) -> Unit
+) {
+    when (altState) {
+        is soloAnimeUiState.Success -> {
+            AnimeDetail(
+                viewModel = viewModel,
+                uiState = uiState,
+                altState = altState,
+                contentPaddingValues = contentPaddingValues,
+                retryAction = retryAction,
+                onMangaClick = onMangaClick
+            )
+        }
+
+        is soloAnimeUiState.Error -> ErrorScreen(retryAction = { viewModel.altGetAnimeFull(viewModel.uiState.value.currentAnimeID!!) })
+        is soloAnimeUiState.Loading -> {
+            Text("Loading")
+        }
+    }
+
+}
+
 
 @Composable
 fun AnimeDetail(
     viewModel: MalViewModel,
     uiState: MalUiState,
+    altState: soloAnimeUiState,
     contentPaddingValues: PaddingValues = PaddingValues(0.dp),
-    retryAction : () -> Unit
+    retryAction: () -> Unit,
+    onMangaClick: (Int) -> Unit
 ) {
     val scrollState = rememberScrollState()
 
     var expanded by rememberSaveable { mutableStateOf(false) }
+
+
+
+
 
     when (uiState.currentAnime) {
         null -> ErrorScreen(retryAction = retryAction)
@@ -170,7 +208,7 @@ fun AnimeDetail(
             HorizontalDivider(Modifier.padding(10.dp))
 
             Text(
-                uiState.currentAnime?.data?.synopsis?: "",
+                uiState.currentAnime?.data?.synopsis ?: "",
                 modifier = Modifier.padding(10.dp)
             )
 
@@ -191,15 +229,18 @@ fun AnimeDetail(
         Column {
             if (uiState.currentAnime?.data?.relations?.isEmpty() == true) {
                 Text("No relations found")
-            }
-            else{
+            } else {
                 Text(
-                    uiState.currentAnime?.data?.relations?.get(0)?.relation.toString() ?: "",
+                    "Relations",
                     modifier = Modifier.padding(10.dp)
 
                 )
                 val relations = uiState.currentAnime?.data?.relations?.size ?: 0
-                RelationList(list = uiState.currentAnime?.data?.relations?.subList(0, relations))
+                RelationList(
+                    list = uiState.currentAnime?.data?.relations?.subList(0, relations),
+                    onAnimeClick = {viewModel.updateCurrentAnime(it)},
+                    onMangaClick = onMangaClick
+                )
 
             }
 
@@ -207,6 +248,7 @@ fun AnimeDetail(
 
     }
 }
+
 
 @Composable
 fun CharacterCard(aniChara: AniChara) {
@@ -251,21 +293,47 @@ fun CharacterList(list: List<AniChara>) {
 }
 
 @Composable
-fun RelationList(list: List<Relation>?){
+fun RelationList(
+    list: List<Relation>?,
+    onAnimeClick: (Int) -> Unit = {},
+    onMangaClick: (Int) -> Unit = {}
+) {
     LazyRow {
         if (list != null) {
             items(list, key = { list -> list.entry[0].mal_id }) { list ->
-                RelationshipCard(list.entry[0])
+                RelationshipCard(list.entry[0], onAnimeClick, onMangaClick)
             }
         }
     }
 }
 
 @Composable
-fun RelationshipCard(entry: Entry){
-    Card(modifier = Modifier.size(150.dp, 100.dp)) {
-        Text(entry.type)
+fun RelationshipCard(entry: Entry, onAnimeClick: (Int) -> Unit = {}, onMangaClick: (Int) -> Unit = {}) {
+    Card(
+        modifier = Modifier
+            .size(150.dp, 100.dp)
+            .padding(horizontal = 2.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 10.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+        onClick = {
+            if (entry.type == "anime") {
+                onAnimeClick(entry.mal_id)
+            } else if (entry.type == "manga") {
+                onMangaClick(entry.mal_id)
+            }
 
-        Text(entry.name)
+        }
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(entry.type)
+            Text(entry.name)
+        }
+
     }
 }

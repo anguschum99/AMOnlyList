@@ -91,14 +91,27 @@ fun BottomNavGraph(
             }
 
             composable(route = NavigationItems.Detail.route) {
-                AnimeDetail(
+//                AnimeDetail(
+//                    viewModel = viewModel,
+//                    uiState = uiState,
+//                    contentPaddingValues = innerPadding,
+//                    retryAction = {
+//                        viewModel::getAnimeFull
+//                    },
+//                    altState = viewModel.soloAnime
+//                )
+                preDetail(
                     viewModel = viewModel,
                     uiState = uiState,
+                    altState = viewModel.soloAnime,
                     contentPaddingValues = innerPadding,
-                    retryAction = {
-                        viewModel::getAnimeFull
+                    retryAction = {viewModel.altGetAnimeFull(viewModel.uiState.value.currentAnimeID!!)},
+                    onMangaClick = {
+                        viewModel.updateCurrentManga(it)
+                        navController.navigate(NavigationItems.MangaDetail.route)
                     }
                 )
+
             }
 
             composable(route = NavigationItems.MangaDetail.route) {
