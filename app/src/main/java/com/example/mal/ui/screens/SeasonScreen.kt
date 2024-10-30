@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -62,7 +63,14 @@ fun SeasonScreen(
                         nextClick = {
                             pager = updatePageNumber(pager, lastVisiblePage)
                             viewModel.getCurrentSeason(pager)
-
+                        },
+                        previousClick = {
+                            pager = decreasePageNumber(pager)
+                            viewModel.getCurrentSeason(pager)
+                        },
+                        currentSeasonClick = {
+                            pager = number
+                            viewModel.getCurrentSeason(1)
                         }
                     )
                     SeasonGrid(uiState.seasonList.data, onClick = onClick)
@@ -73,6 +81,15 @@ fun SeasonScreen(
                 retryAction = viewModel::getCurrentSeason
             )
         }
+    }
+}
+
+fun decreasePageNumber(page: Int): Int {
+    val previousPage = page - 1
+    return if (previousPage < 1) {
+        1
+    } else {
+        return previousPage
     }
 }
 
@@ -92,10 +109,16 @@ fun updatePageNumber(page: Int, maximum: Int): Int {
 fun PageButtons(
     uiState: CurrentSeasonUiState,
     nextClick: () -> Unit,
+    previousClick: () -> Unit,
+    currentSeasonClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Row(horizontalArrangement = Arrangement.SpaceBetween) {
-        Button(onClick = { /*TODO*/ }) {
+    Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween) {
+        Button(onClick = { previousClick() }) {
             Text(text = "Previous")
+        }
+        Button(onClick = { currentSeasonClick() }) {
+            Text(text = "Current Season")
         }
         Button(onClick = { nextClick() }) {
             Text(text = "Next")
