@@ -71,7 +71,8 @@ fun SeasonScreen(
                         currentSeasonClick = {
                             pager = number
                             viewModel.getCurrentSeason(1)
-                        }
+                        },
+                        currentPage = pager
                     )
                     SeasonGrid(uiState.seasonList.data, onClick = onClick)
                 }
@@ -111,12 +112,24 @@ fun PageButtons(
     nextClick: () -> Unit,
     previousClick: () -> Unit,
     currentSeasonClick: () -> Unit,
+    currentPage: Int,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween) {
-        Button(onClick = { previousClick() }) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+
+
+        Button(
+            onClick = { previousClick() },
+            enabled =
+            if (currentPage > 1) {
+                true
+            } else
+                false
+
+        ) {
             Text(text = "Previous")
         }
+
         Button(onClick = { currentSeasonClick() }) {
             Text(text = "Current Season")
         }
