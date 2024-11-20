@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.mal.model.seasons.Data
+import com.example.mal.model.seasons.SeasonList
 import com.example.mal.ui.components.ErrorScreen
 
 @Composable
@@ -106,6 +107,7 @@ fun updatePageNumber(page: Int, maximum: Int): Int {
 }
 
 
+
 @Composable
 fun PageButtons(
     uiState: CurrentSeasonUiState,
@@ -145,7 +147,7 @@ fun SeasonCard(data: Data, onClick: (Data) -> Unit) {
     Card(modifier = Modifier
         .padding(5.dp),
         onClick = { onClick(data) }) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)
                     .data(data.images.jpg.image_url)
@@ -158,6 +160,7 @@ fun SeasonCard(data: Data, onClick: (Data) -> Unit) {
                     .size(250.dp, 350.dp)
                     .border(1.dp, androidx.compose.ui.graphics.Color.Black)
             )
+            Text(data.title, modifier = Modifier.padding(5.dp))
         }
     }
 }

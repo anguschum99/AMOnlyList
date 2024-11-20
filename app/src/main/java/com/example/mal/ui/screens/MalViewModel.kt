@@ -18,6 +18,7 @@ import com.example.mal.model.anime.Data
 import com.example.mal.model.manga.Manga
 import com.example.mal.model.manga.MangaSummary
 import com.example.mal.model.seasons.Season
+import com.example.mal.model.seasons.SeasonData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -63,6 +64,12 @@ sealed interface CurrentSeasonUiState {
     object Loading : CurrentSeasonUiState
 }
 
+sealed interface SeasonListUiState {
+    data class Success(val bigSeasonList: List<SeasonData>) : SeasonListUiState
+    object Error : SeasonListUiState
+    object Loading : SeasonListUiState
+}
+
 
 data class MalUiState(
     val homeState: HomeAnimeUiState,
@@ -94,6 +101,9 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
         private set
 
     var currentSeasonState: CurrentSeasonUiState by mutableStateOf(CurrentSeasonUiState.Loading)
+        private set
+
+    var seasonListState: SeasonListUiState by mutableStateOf(SeasonListUiState.Loading)
         private set
 
     private val _uiState = MutableStateFlow(
@@ -239,6 +249,19 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
         }
     }
 
+    fun getSeasonList() {
+        viewModelScope.launch {
+            seasonListState = SeasonListUiState.Loading
+            seasonListState = try {
+                val seasonList = malRepository.getSeasonList()
+                    ?: throw Exception("Season list is null")
+                SeasonListUiState.Success(seasonList.data)
+            } catch (e: Exception) {
+                SeasonListUiState.Error
+            }
+        }
+    }
+
 
 
 
@@ -274,7 +297,8 @@ class MalViewModel(private val malRepository: MalRepository) : ViewModel() {
             getManga()
             delay(timeMillis = 1000)
             getCurrentSeason()
-
+            delay(timeMillis = 1000)
+            getSeasonList()
         }
 
     }

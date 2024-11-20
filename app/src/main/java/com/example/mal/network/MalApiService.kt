@@ -6,6 +6,7 @@ import com.example.mal.model.anime.AnimeList
 import com.example.mal.model.manga.Manga
 import com.example.mal.model.manga.MangaList
 import com.example.mal.model.seasons.Season
+import com.example.mal.model.seasons.SeasonList
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -52,6 +53,11 @@ interface MalApiService {
     suspend fun getSeasonNow(
         @Query("page") page: Int
     ): Response<Season>
+
+    @GET("seasons")
+    suspend fun getSeasonList(
+    ):Response<SeasonList>
+
 
 
 
