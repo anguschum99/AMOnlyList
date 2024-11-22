@@ -127,7 +127,17 @@ fun BottomNavGraph(
                         viewModel.updateCurrentAnime(it.mal_id)
                         navController.navigate(NavigationItems.Detail.route)
                     },
+                    seasonClick = {
+                        navController.navigate(NavigationItems.SeasonList.route)
+                    },
                     modifier = modifier.padding(innerPadding)
+                )
+            }
+            composable(route = NavigationItems.SeasonList.route) {
+                SeasonScreen(
+                    viewModel = viewModel,
+                    uiState = viewModel.seasonListState,
+                    onClick = {}
                 )
             }
 

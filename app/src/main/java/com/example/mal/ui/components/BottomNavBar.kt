@@ -62,6 +62,12 @@ sealed class NavigationItems(
         selectedIcon = Icons.Filled.Person,
         unselectedIcon = Icons.Outlined.Person
     )
+    object SeasonList : NavigationItems(
+        route = "seasonList",
+        title = "SeasonList",
+        selectedIcon = Icons.Filled.Person,
+        unselectedIcon = Icons.Outlined.Person
+    )
 
 
 }

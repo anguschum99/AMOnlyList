@@ -37,6 +37,7 @@ fun SeasonScreen(
     viewModel: MalViewModel,
     uiState: CurrentSeasonUiState,
     onClick: (Data) -> Unit,
+    seasonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
@@ -59,6 +60,13 @@ fun SeasonScreen(
                         .weight(1f)
 
                 ) {
+                    Button(
+                        onClick = { seasonClick() },
+                        modifier = Modifier.padding(5.dp)
+                    ) {
+                        Text(text = "Season List")
+                    }
+
                     PageButtons(
                         uiState,
                         nextClick = {
