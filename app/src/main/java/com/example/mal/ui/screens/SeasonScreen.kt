@@ -186,6 +186,7 @@ fun SeasonGrid(
         ) {
             items(items = data, key = { data -> data.mal_id }) { data ->
                 SeasonCard(data = data, onClick = { onClick(data) })
+
             }
 
         }

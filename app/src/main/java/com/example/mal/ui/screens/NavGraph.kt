@@ -137,7 +137,8 @@ fun BottomNavGraph(
                 SeasonScreen(
                     viewModel = viewModel,
                     uiState = viewModel.seasonListState,
-                    onClick = {}
+                    onClick = {},
+                    modifier = modifier.padding(innerPadding)
                 )
             }
 
